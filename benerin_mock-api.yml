@@ -1,0 +1,261 @@
+openapi: '3.0.2'
+info:
+  title: Traditional Game API
+  version: '1.0'
+  contact:
+    email: muhammadhusninurfadillah@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: userbiodata
+    description: CRUD userbiodata
+  - name: mitra
+    description: CRUD mitra
+  - name: create order
+    description: create order
+  - name: vehicle
+    description: CRUD vehicle
+paths:
+  /userbiodata:
+    get:
+      tags:
+        - userbiodata
+      summary: Show all user's biodata
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                  data: 
+                    type: array
+                    items:
+                      oneOf:
+                        - type: object
+                          properties:
+                            fullName:
+                              type: string
+                              example: M. Husni Nur Fadillah
+                            gender:
+                              type: string
+                              example: male
+                            phoneNumber: 
+                              type: string
+                              example: 08xxxxxxxx
+                        - type: object
+                          properties:
+                            fullName:
+                              type: string
+                              example: Annisa Shaliha
+                            gender:
+                              type: string
+                              example: female
+                            phoneNumber: 
+                              type: string
+                              example: 08xxxxxxxx          
+        '500':
+          description: Error
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Error
+                  data:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties: 
+                          message:
+                            type: string  
+                            example: Error retrieving all User's biodata
+
+    post:
+      tags:
+        - userbiodata
+      summary: create user biodata
+      requestBody: 
+        description: the data that you have to input in this API
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: husfuu
+                fullName:
+                  type: string
+                  example: husfuu@gmail.com
+                gender:
+                  type: string
+                  example: male
+                bio:
+                  type: string
+                  example: tampan dan berani
+                city:
+                  type: string
+                  example: Banjarbaru
+      responses:
+        '200':
+          description: create user is successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: "OK"
+                  data: 
+                    type: object
+                    properties:
+                      message: 
+                        type: string
+                        example: userbiodata created successfully
+        "422":
+          description: error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: Error
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: error while creating biodata  
+
+  /userbiodata/{id}:  
+    get:
+      tags: 
+        - userbiodata
+      summary: Show the user's biodata based on id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+                  data: 
+                    type: object
+                    properties:
+                      username: 
+                        type: string
+                        example: husfuu
+                      fullName:
+                        type: string
+                        example: M. Husni Nur Fadillah
+                      gender:
+                        type: string
+                        example: "male"
+                      bio: 
+                        type: string
+                        example: "tampan dan berani"
+                      city:
+                        type: string
+                        example: Banjarbaru            
+                          
+        '500':
+          description: Error
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Error
+                  data:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties: 
+                          message:
+                            type: string  
+                            example: Error retrieving all User's biodata
+
+
+    put:
+      tags:
+        - userbiodata
+      summary: create user biodata
+      requestBody: 
+        description: the data that you have to input in this API
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: husfuu
+                fullName:
+                  type: string
+                  example: husfuu@gmail.com
+                gender:
+                  type: string
+                  example: male
+                bio:
+                  type: string
+                  example: tampan dan berani
+                city:
+                  type: string
+                  example: Banjarbaru
+      responses:
+        '200':          
+          description: update user is successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: "OK"
+                  data: 
+                    type: object
+                    properties:
+                      message: 
+                        type: string
+                        example: userbiodata updated successfully
+        "500":
+          description: error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                    example: Error
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: error while updating biodata  
+    
