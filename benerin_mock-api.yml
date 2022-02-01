@@ -1,6 +1,6 @@
 openapi: '3.0.2'
 info:
-  title: Traditional Game API
+  title: Benerin API
   version: '1.0'
   contact:
     email: muhammadhusninurfadillah@gmail.com
@@ -8,25 +8,37 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  - url: https://api.server.test/v1
+  - url: https://mock.benerin.com
+    description: Mock Server
+  - url: https://stagging.benerin.com
+    description: Staging Server
 tags:
   - name: userbiodata
     description: CRUD userbiodata
   - name: mitra
     description: CRUD mitra
-  - name: create order
+  - name: order
     description: create order
   - name: vehicle
     description: CRUD vehicle
+
+security:
+  - BearerToken: []
+
 paths:
   /userbiodata:
     get:
+      operationId: showUserbiodata
       tags:
         - userbiodata
       summary: Show all user's biodata
+      description: |
+        # Get Userbiodatas
+        Use this endpoint to retrieve all userbiodatas that are
+        available on the database.
       responses:
         '200':
-          description: OK
+          description: Get userbiodatas body schema
           content:
             application/json:
               schema: 
@@ -61,6 +73,12 @@ paths:
                             phoneNumber: 
                               type: string
                               example: 08xxxxxxxx          
+        '401': 
+          $ref: "#/components/responses/UnauthorizedResponse"
+        
+        '403': 
+          $ref: "#/components/responses/ForbiddenResponse"
+
         '500':
           description: Error
           content: 
@@ -82,35 +100,17 @@ paths:
                             example: Error retrieving all User's biodata
 
     post:
+      operationId: createUserbiodata
+      security: 
+        - BearerToken: []  # use the specific way
       tags:
         - userbiodata
       summary: create user biodata
       requestBody: 
-        description: the data that you have to input in this API
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: husfuu
-                fullName:
-                  type: string
-                  example: husfuu@gmail.com
-                gender:
-                  type: string
-                  example: male
-                bio:
-                  type: string
-                  example: tampan dan berani
-                city:
-                  type: string
-                  example: Banjarbaru
+        $ref: "#/components/requestBodies/UserbiodataRequest"
       responses:
         '200':
-          description: create user is successfully
+          description: Create userbiodata is successfully
           content:
             application/json:
               schema:
@@ -125,8 +125,15 @@ paths:
                       message: 
                         type: string
                         example: userbiodata created successfully
-        "422":
-          description: error
+
+        '401': 
+          $ref: "#/components/responses/UnauthorizedResponse"
+        
+        '403': 
+          $ref: "#/components/responses/ForbiddenResponse"
+
+        "500":
+          description: Error
           content:
             application/json:
               schema:
@@ -146,7 +153,15 @@ paths:
     get:
       tags: 
         - userbiodata
-      summary: Show the user's biodata based on id
+      summary: show the user's biodata based on id
+      parameters:
+        - in: path
+          name: id
+          description: The id of user
+          required: true
+          schema:
+            type: string
+            example: asjdbajbd12
       responses:
         '200':
           description: OK
@@ -176,7 +191,13 @@ paths:
                       city:
                         type: string
                         example: Banjarbaru            
-                          
+
+        '401': 
+          $ref: "#/components/responses/UnauthorizedResponse"
+        
+        '403': 
+          $ref: "#/components/responses/ForbiddenResponse"
+
         '500':
           description: Error
           content: 
@@ -197,34 +218,21 @@ paths:
                             type: string  
                             example: Error retrieving all User's biodata
 
-
     put:
+      operationId: updateUserbiodata
       tags:
         - userbiodata
-      summary: create user biodata
+      summary: update user biodata
+      parameters:
+        - in: path
+          name: id
+          description: The id of user
+          required: true
+          schema:
+            type: string
+            example: asjdbajbd12
       requestBody: 
-        description: the data that you have to input in this API
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: husfuu
-                fullName:
-                  type: string
-                  example: husfuu@gmail.com
-                gender:
-                  type: string
-                  example: male
-                bio:
-                  type: string
-                  example: tampan dan berani
-                city:
-                  type: string
-                  example: Banjarbaru
+        $ref: "#/components/requestBodies/UserbiodataRequest"
       responses:
         '200':          
           description: update user is successfully
@@ -242,6 +250,13 @@ paths:
                       message: 
                         type: string
                         example: userbiodata updated successfully
+
+        '401': 
+          $ref: "#/components/responses/UnauthorizedResponse"
+        
+        '403': 
+          $ref: "#/components/responses/ForbiddenResponse"
+
         "500":
           description: error
           content:
@@ -258,4 +273,74 @@ paths:
                       message:
                         type: string
                         example: error while updating biodata  
+
+components:
+  requestBodies:
+    UserbiodataRequest:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: M. Husni Nur Fadillah
+                gender:
+                  type: string
+                  example: male
+                phoneNumber:
+                  type: string
+                  example: 08xxxxxxxx
+  
+  responses:
+    ForbiddenResponse:
+      description: Response when accessing protected endpoint with access but sufficient access
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: FAIL
+              data:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "FORBIDDEN"
+                  message:
+                    type: string
+                    example: "Invalid access level"
     
+    UnauthorizedResponse:
+      description: Response when accessing protected endpoint without access
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: FAIL
+              data:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "UNAUTHORIZED"
+                  message:
+                    type: string
+                    example: "Access is not granted"
+
+    UserBiodataResponse:
+    
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Retrieve it via Authentication tagged endpoint"
+
+    # ErrorResponse
